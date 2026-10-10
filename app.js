@@ -1394,7 +1394,7 @@ function renderPrintSheet() {
     printSheet.innerHTML = `
         <div class="ps-left">
             <header class="ps-header">
-                <span class="ps-brand">Verrotwood · Hoja de culto</span>
+                <span class="ps-brand">Verrotwood · Hoja de culto · Herramienta no oficial</span>
                 <span class="ps-label">Culto</span>
                 <h1>${escapeHtml(s.cultName) || '&nbsp;'}</h1>
                 <div class="ps-deity">
