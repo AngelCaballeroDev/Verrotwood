@@ -1,0 +1,10 @@
+# Manual oficial (37 MB, con derechos de autor): se guarda en local, no en el repositorio
+docs/*.pdf
+
+# Configuración local de herramientas
+.claude/
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store

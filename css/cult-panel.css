@@ -1,0 +1,210 @@
+/* Bloque de la Deidad */
+.deity-section-box {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background:
+        radial-gradient(ellipse at 0% 0%, var(--accent-tint), transparent 60%),
+        rgba(8, 7, 6, 0.45);
+}
+
+.deity-info-display {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-width: 0;
+}
+
+.deity-identity {
+    min-width: 0;
+}
+
+.deity-label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--highlight);
+}
+
+.deity-name {
+    margin: 6px 0 2px;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text);
+}
+
+.deity-lore {
+    margin: 0;
+    font-family: var(--font-lore);
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.deity-trait {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.trait-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 52px;
+    margin-top: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-3);
+    color: var(--highlight-bright);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+}
+
+.deity-trigger-btn {
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid var(--highlight);
+    color: var(--highlight-bright);
+    box-shadow: none;
+}
+
+.deity-trigger-btn:hover {
+    background: var(--highlight);
+    color: var(--bg);
+    filter: none;
+    box-shadow: 0 8px 22px -10px var(--highlight-glow);
+}
+
+/* Sistema de Favor */
+.favor-stats-box {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: rgba(8, 7, 6, 0.45);
+}
+
+.favor-budget {
+    flex: 1;
+    max-width: 260px;
+    margin-bottom: 0;
+}
+
+.field-hint {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--danger-soft);
+}
+
+.field-hint[hidden] {
+    display: none;
+}
+
+.favor-display {
+    display: flex;
+    gap: 10px;
+}
+
+.favor-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 96px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+}
+
+.favor-stat-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.favor-stat strong {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--highlight-bright);
+    font-variant-numeric: tabular-nums;
+}
+
+.favor-stat strong.is-negative {
+    color: var(--danger);
+}
+
+/* Estado del guardado automático, imprimir, exportar e importar */
+.cult-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.save-status {
+    margin-right: auto;
+    font-size: 0.78rem;
+    color: var(--text-faint);
+}
+
+.save-status.is-error {
+    color: var(--danger-soft);
+}
+
+@media (max-width: 640px) {
+    .deity-section-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .deity-info-display {
+        align-items: flex-start;
+    }
+
+    .deity-trait {
+        text-align: right;
+    }
+
+    .favor-stats-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .favor-budget {
+        max-width: none;
+    }
+
+    .favor-stat {
+        flex: 1;
+        align-items: flex-start;
+    }
+
+    .save-status {
+        width: 100%;
+    }
+
+    .cult-actions button {
+        flex: 1 1 100%;
+    }
+}

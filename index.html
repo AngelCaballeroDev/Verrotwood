@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verrotwood - Creador de Cultos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/cult-panel.css">
+    <link rel="stylesheet" href="css/roster.css">
+    <link rel="stylesheet" href="css/deity-modal.css">
+    <link rel="stylesheet" href="css/rituals.css">
+    <link rel="stylesheet" href="css/equipment.css">
+    <link rel="stylesheet" href="css/campaign.css">
+    <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+    <!-- Aplica la paleta del dios guardado antes del primer pintado, para que no aparezca la neutra -->
+    <script>
+        try {
+            const saved = JSON.parse(localStorage.getItem('verrotwood_app_state'));
+            if (saved && saved.deityName && saved.ritualTrait) {
+                document.body.dataset.theme = saved.ritualTrait;
+            }
+        } catch (e) {}
+    </script>
+    <div class="container">
+        <header class="app-header">
+            <span class="eyebrow">Verrotwood</span>
+            <h1>Creador de Cultos</h1>
+            <p class="app-subtitle">Lo que se entierra en el pantano, no siempre permanece enterrado.</p>
+        </header>
+
+        <!-- Panel de Configuración del Culto -->
+        <section class="panel">
+            <h2>Configuración del Culto</h2>
+            <div class="form-group">
+                <label for="cultName">Nombre del Culto</label>
+                <input type="text" id="cultName" placeholder="Ej. Los Hijastros del Pantano">
+            </div>
+
+            <!-- Sección de la Deidad Interactiva -->
+            <div class="deity-section-box">
+                <div class="deity-info-display">
+                    <div class="deity-identity">
+                        <span class="deity-label">Deidad Vinculada</span>
+                        <h3 id="displayDeityName" class="deity-name">Ninguna deidad invocada</h3>
+                        <p id="displayDeityLore" class="deity-lore">Asigna un dios a tu culto...</p>
+                    </div>
+                    <div class="deity-trait">
+                        <span class="deity-label">Atributo</span>
+                        <span id="displayRitualTrait" class="trait-badge">-</span>
+                    </div>
+                </div>
+                <button id="openDeityModalBtn" class="deity-trigger-btn">¿Quién es tu Dios?</button>
+            </div>
+
+            <!-- Rituales del culto: exactamente 4 -->
+            <div class="rituals-box">
+                <div class="rituals-header">
+                    <div>
+                        <span class="deity-label">Rituales del Culto</span>
+                        <p id="ritualStatus" class="rituals-status"></p>
+                    </div>
+                    <button id="openRitualModalBtn" class="deity-trigger-btn">Abrir Grimorio</button>
+                </div>
+                <ul id="selectedRituals" class="ritual-slots"></ul>
+            </div>
+
+            <!-- Campaña: el Poder del dios (manual, págs. 48-51) -->
+            <div class="campaign-box">
+                <div class="rituals-header">
+                    <div>
+                        <span class="deity-label">Campaña · Poder del dios</span>
+                        <p id="powerStatus" class="rituals-status"></p>
+                    </div>
+                    <div class="power-goal">
+                        <label for="powerGoal">Meta de Poder</label>
+                        <input type="number" id="powerGoal" min="1" step="1" value="5">
+                        <div class="favor-presets power-presets" role="group" aria-label="Duración de la campaña">
+                            <button type="button" data-power-goal="5">Corta · 5</button>
+                            <button type="button" data-power-goal="21">Larga · 21</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="power-track">
+                    <button id="powerDownBtn" class="power-step" aria-label="Restar Poder">−</button>
+                    <div class="power-meter">
+                        <strong id="powerValue" class="power-value">0 / 5</strong>
+                        <div class="power-bar"><span id="powerBarFill"></span></div>
+                    </div>
+                    <button id="powerUpBtn" class="power-step" aria-label="Sumar Poder">+</button>
+                </div>
+                <div class="encounter-actions">
+                    <span class="encounter-label">Resultado del encuentro</span>
+                    <button id="encounterWinBtn">Victoria · +1 Poder, +100 Favor</button>
+                    <button id="encounterLossBtn" class="secondary-btn">Derrota · +50 Favor</button>
+                </div>
+            </div>
+
+            <div class="favor-stats-box">
+                <div class="form-group favor-budget">
+                    <label for="startingFavor">Favor total del culto</label>
+                    <input type="number" id="startingFavor" value="300" min="0" step="5">
+                    <div class="favor-presets" role="group" aria-label="Presupuestos del manual">
+                        <button type="button" data-favor-preset="300">Campaña · 300</button>
+                        <button type="button" data-favor-preset="500">Partida suelta · 500</button>
+                    </div>
+                    <small id="favorHint" class="field-hint" role="status" hidden></small>
+                </div>
+                <div class="favor-display">
+                    <div class="favor-stat">
+                        <span class="favor-stat-label">Gastado</span>
+                        <strong id="spentFavor">0</strong>
+                    </div>
+                    <div class="favor-stat">
+                        <span class="favor-stat-label">Restante</span>
+                        <strong id="remainingFavor">150</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cult-actions">
+                <span id="saveStatus" class="save-status" role="status">Guardado automáticamente en este navegador</span>
+                <button id="printSheetBtn" class="secondary-btn">Imprimir hoja</button>
+                <button id="exportJsonBtn" class="secondary-btn">Exportar JSON</button>
+                <button id="importJsonBtn" class="secondary-btn">Importar JSON</button>
+                <input type="file" id="importJsonInput" accept="application/json,.json" hidden>
+            </div>
+        </section>
+
+        <!-- Panel de Cultistas (Roster) - Inicialmente bloqueado hasta elegir Deidad -->
+        <section id="rosterSection" class="panel locked-section">
+            <div class="roster-header">
+                <h2>Alineación de Cultistas <span class="roster-count">(<span id="cultistCount">0</span>/4)</span></h2>
+                <button id="addCultistBtn" disabled>Indoctrinar Cultista (0 Favor)</button>
+            </div>
+            <div id="rosterLockMessage" class="lock-notice">
+                Debes consagrar una Deidad y elegir su Atributo principal antes de indoctrinar a tu alineación y calcular los Puntos de Ritual.
+            </div>
+            <div class="favor-legend">
+                <span><strong>+1 Stat</strong> 50 Favor</span>
+                <span><strong>+5 Salud</strong> 75 Favor</span>
+                <span><strong>Cultista Fresco</strong> 0 Favor</span>
+            </div>
+            <!-- Reserva de RP: suma del dado más alto de cada cultista al inicio de la partida -->
+            <div class="rp-pool">
+                <div class="rp-pool-info">
+                    <span class="rp-pool-label">Reserva de RP del culto</span>
+                    <strong id="rpPoolTotal" class="rp-pool-total">0</strong>
+                    <span id="rpPoolStatus" class="rp-pool-status"></span>
+                </div>
+                <div class="rp-pool-actions">
+                    <label class="rp-mode" title="Variante del manual: ambos cultos empiezan con 20 RP">
+                        <input type="checkbox" id="rpFixedToggle"> RP fijo (20)
+                    </label>
+                    <button id="rollAllRpBtn">Tirar RP pendientes</button>
+                    <button id="newGameBtn" class="secondary-btn">Nueva partida</button>
+                </div>
+            </div>
+            <div id="rosterContainer" class="roster-grid"></div>
+
+            <!-- Reserva: equipo comprado o encontrado que no lleva ningún cultista -->
+            <div class="reserve-box">
+                <div class="equip-head">
+                    <span class="section-label">Reserva del culto</span>
+                    <button class="equip-add-btn" data-open-armory="reserve">+ Añadir</button>
+                </div>
+                <p class="reserve-hint">Equipo del culto que ningún cultista lleva. Guarda equipo con ↓ en una tarjeta y repártelo desde aquí.</p>
+                <div id="reserveList"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL DE LA DEIDAD -->
+    <div id="deityModal" class="modal-overlay">
+        <div id="modalGrimoireBox" class="modal-grimoire">
+            <h2>Invocación de la Deidad</h2>
+            <p class="modal-instructions">Selecciona el Atributo primario que emana de tu dios</p>
+
+            <!-- Cuadrantes de Atributos -->
+            <div class="quadrants-grid" role="radiogroup" aria-label="Atributo de Ritual">
+                <div class="quadrant str-quad" data-trait="STR" role="radio" aria-checked="false" tabindex="-1">
+                    <span class="trait-symbol" aria-hidden="true">⚔️</span>
+                    <span class="trait-name">Fuerza (STR)</span>
+                    <span class="trait-desc">Brutalidad y sangre</span>
+                </div>
+                <div class="quadrant dex-quad" data-trait="DEX" role="radio" aria-checked="false" tabindex="-1">
+                    <span class="trait-symbol" aria-hidden="true">🗡️</span>
+                    <span class="trait-name">Destreza (DEX)</span>
+                    <span class="trait-desc">Agilidad y sombra</span>
+                </div>
+                <div class="quadrant int-quad" data-trait="INT" role="radio" aria-checked="false" tabindex="-1">
+                    <span class="trait-symbol" aria-hidden="true">👁️</span>
+                    <span class="trait-name">Inteligencia (INT)</span>
+                    <span class="trait-desc">Susurros y arcano</span>
+                </div>
+                <div class="quadrant def-quad" data-trait="DEF" role="radio" aria-checked="false" tabindex="-1">
+                    <span class="trait-symbol" aria-hidden="true">🛡️</span>
+                    <span class="trait-name">Defensa (DEF)</span>
+                    <span class="trait-desc">Raíces y caparazón</span>
+                </div>
+            </div>
+
+            <!-- Inputs dentro de la modal -->
+            <div class="form-group">
+                <label for="modalDeityName">Nombre de la Deidad</label>
+                <input type="text" id="modalDeityName" placeholder="Ej. La Madre Raíz">
+            </div>
+
+            <div class="form-group">
+                <label for="modalDeityLore">Lore / Descripción breve</label>
+                <input type="text" id="modalDeityLore" placeholder="Ej. Aquella que habita bajo el lodo y exige ofrendas">
+            </div>
+
+            <div class="modal-buttons">
+                <button id="saveDeityModalBtn">Consagrar Deidad</button>
+                <button id="closeDeityModalBtn" class="secondary-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DEL GRIMORIO DE RITUALES -->
+    <div id="ritualModal" class="modal-overlay">
+        <div class="modal-grimoire ritual-grimoire" role="dialog" aria-modal="true" aria-labelledby="ritualModalTitle">
+            <h2 id="ritualModalTitle">Grimorio de Rituales</h2>
+            <p class="modal-instructions">Elige exactamente 4 rituales para tu culto</p>
+
+            <div class="ritual-toolbar">
+                <input type="search" id="ritualSearch" placeholder="Buscar por nombre o efecto..." aria-label="Buscar rituales">
+                <div id="ritualFilters" class="ritual-filters" role="group" aria-label="Filtrar por coste"></div>
+            </div>
+
+            <div id="ritualCatalog" class="ritual-catalog"></div>
+
+            <div class="ritual-modal-footer">
+                <span id="ritualModalCount" class="ritual-modal-count"></span>
+                <button id="closeRitualModalBtn">Hecho</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE LA ARMERÍA (equipo de un cultista) -->
+    <div id="armoryModal" class="modal-overlay">
+        <div class="modal-grimoire armory-grimoire" role="dialog" aria-modal="true" aria-labelledby="armoryTitle">
+            <h2 id="armoryTitle">Armería</h2>
+            <p class="modal-instructions">El equipo se compra con Favor del culto</p>
+
+            <label class="armory-found">
+                <input type="checkbox" id="armoryFoundToggle">
+                Encontrado explorando el bosque (sin coste)
+            </label>
+
+            <div id="armoryCatalog" class="armory-catalog"></div>
+
+            <div class="ritual-modal-footer">
+                <span id="armoryFavor" class="armory-favor"></span>
+                <button id="closeArmoryModalBtn">Hecho</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hoja de culto imprimible: solo se muestra al imprimir (ver css/print.css) -->
+    <div id="printSheet" class="print-sheet"></div>
+
+    <script src="data/rituals.js"></script>
+    <script src="data/equipment.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

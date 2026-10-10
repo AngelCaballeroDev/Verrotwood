@@ -1,0 +1,109 @@
+/*
+ * Paletas de la web.
+ * Por defecto es neutra (ceniza y hueso). Al consagrar una deidad, app.js pone
+ * data-theme="STR|DEX|INT|DEF" en <body> y toda la web adopta su color.
+ * La modal de la deidad y cada cuadrante usan las mismas paletas como vista previa.
+ *
+ * Cada paleta solo define 4 colores; el resto de tokens se derivan de ellos.
+ */
+
+/* Registro de los colores base para poder animar el cambio de paleta */
+@property --accent {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #5f5953;
+}
+
+@property --accent-bright {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #857e76;
+}
+
+@property --highlight {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #a59d92;
+}
+
+@property --highlight-bright {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #d9d2c7;
+}
+
+/* Neutra: ceniza y hueso */
+:root {
+    --accent: #5f5953;
+    --accent-bright: #857e76;
+    --highlight: #a59d92;
+    --highlight-bright: #d9d2c7;
+}
+
+/* Fuerza: sangre seca y cobre */
+[data-theme="STR"],
+.quadrant[data-trait="STR"] {
+    --accent: #8e1c1c;
+    --accent-bright: #c2392f;
+    --highlight: #c98a6a;
+    --highlight-bright: #ecb999;
+}
+
+/* Destreza: oro viejo y sombra */
+[data-theme="DEX"],
+.quadrant[data-trait="DEX"] {
+    --accent: #7d5d1f;
+    --accent-bright: #b38c3d;
+    --highlight: #c9a45c;
+    --highlight-bright: #e9cb8b;
+}
+
+/* Inteligencia: azul arcano y niebla */
+[data-theme="INT"],
+.quadrant[data-trait="INT"] {
+    --accent: #2c4a78;
+    --accent-bright: #4c76b0;
+    --highlight: #7f9fcc;
+    --highlight-bright: #b6cff0;
+}
+
+/* Defensa: musgo y raíces */
+[data-theme="DEF"],
+.quadrant[data-trait="DEF"] {
+    --accent: #3d5530;
+    --accent-bright: #61824a;
+    --highlight: #92ab74;
+    --highlight-bright: #c0d8a2;
+}
+
+/* Tokens derivados: se recalculan en cada elemento que tiene paleta propia */
+:root,
+body,
+[data-theme],
+.quadrant[data-trait] {
+    --accent-glow: color-mix(in srgb, var(--accent-bright) 35%, transparent);
+    --accent-tint: color-mix(in srgb, var(--accent) 16%, transparent);
+    --highlight-glow: color-mix(in srgb, var(--highlight) 35%, transparent);
+    --border: color-mix(in srgb, var(--highlight) 13%, transparent);
+    --border-strong: color-mix(in srgb, var(--highlight) 30%, transparent);
+    --surface: color-mix(in srgb, var(--accent) 6%, #121110);
+    --surface-2: color-mix(in srgb, var(--accent) 7%, #1a1817);
+    --surface-3: color-mix(in srgb, var(--accent) 10%, #24211f);
+}
+
+/* Transición suave al cambiar de paleta (en body solo tras la carga, ver app.js) */
+body.theme-animate,
+.modal-grimoire {
+    transition:
+        --accent 0.8s ease,
+        --accent-bright 0.8s ease,
+        --highlight 0.8s ease,
+        --highlight-bright 0.8s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.theme-animate,
+    .modal-grimoire {
+        transition: none;
+    }
+}

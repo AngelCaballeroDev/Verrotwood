@@ -1,0 +1,487 @@
+/* Cabecera del Roster */
+.roster-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.roster-header h2 {
+    margin: 0;
+}
+
+.roster-count {
+    color: var(--text-faint);
+    font-family: var(--font-ui);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+}
+
+/* Leyenda de costes de Favor */
+.favor-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.favor-legend span {
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(8, 7, 6, 0.45);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.favor-legend strong {
+    color: var(--highlight-bright);
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+/* Sección bloqueada: se atenúa el contenido pero no el aviso */
+.panel.locked-section > :not(.lock-notice) {
+    opacity: 0.4;
+    pointer-events: none;
+    filter: grayscale(0.4);
+}
+
+.lock-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-strong);
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 0.88rem;
+}
+
+.lock-notice::before {
+    content: '✠';
+    flex-shrink: 0;
+    font-size: 1.2rem;
+    color: var(--highlight);
+}
+
+/* Reserva de RP del culto */
+.rp-pool {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background:
+        radial-gradient(ellipse at 0% 50%, var(--accent-tint), transparent 70%),
+        rgba(8, 7, 6, 0.45);
+}
+
+.rp-pool-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    column-gap: 14px;
+}
+
+.rp-pool-label {
+    grid-column: 1 / -1;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--highlight);
+}
+
+.rp-pool-total {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--highlight-bright);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 24px var(--accent-glow);
+}
+
+.rp-pool-status {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.rp-pool-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Interruptor de la variante de RP fijo */
+.rp-mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 6px 0 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.rp-mode input {
+    accent-color: var(--accent-bright);
+}
+
+@media (max-width: 600px) {
+    .rp-pool-actions,
+    .rp-pool-actions button {
+        width: 100%;
+    }
+}
+
+/* Rejilla de tarjetas */
+.roster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.cultist-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background:
+        linear-gradient(180deg, color-mix(in srgb, var(--surface-3) 70%, transparent), color-mix(in srgb, var(--surface) 90%, transparent));
+    box-shadow: 0 12px 28px -18px rgba(0, 0, 0, 0.9);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.cultist-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px -18px rgba(0, 0, 0, 1);
+}
+
+.card-number {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--text-faint);
+}
+
+.card-header label {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--highlight);
+}
+
+.cultist-card input[type="text"] {
+    padding: 8px 10px;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Movimiento y Favor invertido */
+.card-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.meta-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: rgba(8, 7, 6, 0.45);
+}
+
+.meta-box strong {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.meta-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    white-space: nowrap;
+}
+
+.meta-favor {
+    border-color: var(--border-strong);
+}
+
+.meta-favor strong {
+    color: var(--highlight-bright);
+}
+
+/* Equipo / Notas */
+.notes-field label {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--highlight);
+}
+
+.notes-field textarea {
+    display: block;
+    width: 100%;
+    min-height: 58px;
+    padding: 8px 10px;
+    resize: vertical;
+    background: rgba(8, 7, 6, 0.6);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.notes-field textarea::placeholder {
+    color: var(--text-faint);
+}
+
+.notes-field textarea:hover {
+    border-color: color-mix(in srgb, var(--highlight) 45%, transparent);
+}
+
+.notes-field textarea:focus {
+    outline: none;
+    border-color: var(--accent-bright);
+    background: rgba(8, 7, 6, 0.85);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Filas de estadísticas */
+.stat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-row {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+}
+
+.stat-row:hover {
+    background: rgba(255, 255, 255, 0.025);
+}
+
+/* Destaca el atributo de ritual de la deidad */
+.stat-row.is-ritual {
+    background: var(--accent-tint);
+    box-shadow: inset 2px 0 0 var(--accent-bright);
+}
+
+.stat-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.stat-row.is-ritual .stat-name {
+    color: color-mix(in srgb, var(--accent-bright) 50%, var(--text));
+}
+
+.stat-pips {
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+}
+
+.pip {
+    flex: 1;
+    max-width: 18px;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(233, 223, 208, 0.08);
+}
+
+.pip.filled {
+    background: linear-gradient(90deg, var(--highlight), var(--highlight-bright));
+    box-shadow: 0 0 8px var(--highlight-glow);
+}
+
+.stat-row.is-ritual .pip.filled {
+    background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.stat-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-value {
+    min-width: 26px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-controls button {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 6px;
+    border-radius: 8px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    letter-spacing: 0;
+    box-shadow: none;
+}
+
+.stat-controls button:disabled {
+    opacity: 0.35;
+    background: var(--surface-3);
+    border-color: var(--border);
+    color: var(--text-faint);
+    cursor: not-allowed;
+}
+
+.stat-controls button:not(:disabled):hover {
+    background: var(--accent);
+    border-color: var(--accent-bright);
+    color: var(--on-accent);
+    filter: none;
+}
+
+/* Salud */
+.health-row {
+    padding: 10px 8px 4px;
+    border-top: 1px solid var(--border);
+}
+
+.health-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.health-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--surface-3);
+    overflow: hidden;
+}
+
+.health-bar span {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--life), var(--life-bright));
+    box-shadow: 0 0 10px color-mix(in srgb, var(--life-bright) 40%, transparent);
+    transition: width 0.3s ease;
+}
+
+/* Tirada de Puntos de Ritual */
+.rp-roll-row {
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-strong);
+    background: rgba(8, 7, 6, 0.5);
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.rp-roll-row label {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--highlight);
+    margin-bottom: 8px;
+}
+
+.rp-roll-row strong {
+    color: var(--highlight-bright);
+}
+
+.rp-dice-box {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-right: 4px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-3);
+    color: var(--text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+}
+
+.rp-roll-btn {
+    width: 100%;
+    padding: 9px 12px;
+    background: transparent;
+    border: 1px solid var(--highlight);
+    color: var(--highlight-bright);
+    box-shadow: none;
+    font-size: 0.72rem;
+}
+
+.rp-roll-btn:hover {
+    background: var(--highlight);
+    color: var(--bg);
+    filter: none;
+}
+
+/* Botón de retirar */
+.delete-btn {
+    width: 100%;
+    margin-top: auto;
+    padding: 8px;
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+    color: var(--danger-soft);
+    box-shadow: none;
+    font-size: 0.7rem;
+}
+
+.delete-btn:hover {
+    background: color-mix(in srgb, var(--danger) 25%, transparent);
+    border-color: var(--danger);
+    color: var(--on-accent);
+    filter: none;
+}
+
+@media (max-width: 600px) {
+    .roster-header button {
+        width: 100%;
+    }
+}

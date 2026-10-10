@@ -1,0 +1,240 @@
+/* Tokens fijos (los colores de paleta están en themes.css) */
+:root {
+    --bg: #0c0b0a;
+
+    --text: #e8e3dc;
+    --text-muted: #a39d96;
+    --text-faint: #6d6862;
+    --on-accent: #f8f2ea;
+
+    /* Colores semánticos que no cambian con la deidad */
+    --danger: #b9332b;
+    --danger-soft: #e39a92;
+    --life: #4f6a3c;
+    --life-bright: #8ba96c;
+
+    --radius: 14px;
+    --radius-sm: 9px;
+    --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.9);
+
+    --font-display: 'Cinzel', 'Georgia', serif;
+    --font-lore: 'EB Garamond', 'Georgia', serif;
+    --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* El atributo hidden debe ganar a los display de los componentes */
+[hidden] {
+    display: none !important;
+}
+
+body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.5;
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, color-mix(in srgb, var(--highlight) 9%, transparent), transparent 70%),
+        radial-gradient(ellipse 50% 40% at 0% 80%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Grano de pergamino sobre toda la página */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.07;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+}
+
+/* Cabecera */
+.app-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--highlight);
+    padding: 4px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    margin-bottom: 14px;
+}
+
+h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 5vw, 2.8rem);
+    letter-spacing: 0.06em;
+    line-height: 1.15;
+    color: var(--text);
+    text-shadow: 0 0 40px var(--accent-glow);
+}
+
+.app-subtitle {
+    margin: 10px 0 0;
+    font-family: var(--font-lore);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--text-muted);
+}
+
+h2 {
+    margin: 0 0 20px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--highlight);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Línea decorativa tras los títulos de sección */
+.panel > h2::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-strong), transparent);
+}
+
+.panel {
+    position: relative;
+    background: linear-gradient(180deg,
+        color-mix(in srgb, var(--surface-2) 92%, transparent),
+        color-mix(in srgb, var(--surface) 92%, transparent));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(6px);
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+input[type="text"],
+input[type="search"],
+input[type="number"] {
+    width: 100%;
+    padding: 11px 14px;
+    background: rgba(8, 7, 6, 0.6);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+input::placeholder {
+    color: var(--text-faint);
+}
+
+input[type="text"]:hover,
+input[type="search"]:hover,
+input[type="number"]:hover {
+    border-color: color-mix(in srgb, var(--highlight) 45%, transparent);
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent-bright);
+    background: rgba(8, 7, 6, 0.85);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(180deg, var(--accent-bright), var(--accent));
+    color: var(--on-accent);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-sm);
+    padding: 11px 20px;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 18px -8px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    transition: transform 0.15s, box-shadow 0.2s, filter 0.2s, background 0.2s;
+}
+
+button:hover {
+    filter: brightness(1.12);
+    box-shadow: 0 10px 24px -8px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+button:active {
+    transform: translateY(1px) scale(0.99);
+}
+
+button:focus-visible {
+    outline: 2px solid var(--highlight);
+    outline-offset: 2px;
+}
+
+button:disabled {
+    background: var(--surface-3);
+    color: var(--text-faint);
+    border-color: var(--border);
+    box-shadow: none;
+    filter: none;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 20px 12px 48px;
+    }
+
+    .panel {
+        padding: 20px 16px;
+    }
+}

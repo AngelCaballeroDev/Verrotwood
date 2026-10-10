@@ -1,0 +1,415 @@
+/* Color por tipo de equipo */
+[data-kind="weapon"] { --kind: var(--highlight); }
+[data-kind="gear"]   { --kind: var(--life-bright); }
+
+/* ---------- Presupuestos rápidos ---------- */
+.favor-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.favor-presets button {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+    box-shadow: none;
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+}
+
+.favor-presets button:hover {
+    border-color: var(--highlight);
+    color: var(--highlight-bright);
+    filter: none;
+    box-shadow: none;
+}
+
+/* ---------- Equipo en la tarjeta ---------- */
+.meta-box.is-mounted {
+    border-color: color-mix(in srgb, var(--life-bright) 45%, transparent);
+}
+
+.meta-box.is-mounted .meta-label {
+    color: var(--life-bright);
+}
+
+.equip-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7px;
+}
+
+.section-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--highlight);
+}
+
+.equip-add-btn {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--highlight-bright);
+    box-shadow: none;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+}
+
+.equip-add-btn:hover {
+    background: var(--highlight);
+    border-color: var(--highlight);
+    color: var(--bg);
+    filter: none;
+    box-shadow: none;
+}
+
+.equip-empty {
+    margin: 0;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border);
+    text-align: center;
+    font-family: var(--font-lore);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--text-faint);
+}
+
+.equip-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.equip-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px 7px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--kind);
+    background: rgba(8, 7, 6, 0.45);
+}
+
+.equip-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.equip-name {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.equip-qty {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    color: var(--kind);
+}
+
+.equip-detail {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.equip-cost {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--highlight-bright);
+    font-variant-numeric: tabular-nums;
+}
+
+.equip-remove {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 0.9rem;
+    letter-spacing: 0;
+    box-shadow: none;
+}
+
+.equip-remove:hover {
+    background: color-mix(in srgb, var(--danger) 25%, transparent);
+    border-color: var(--danger);
+    color: var(--on-accent);
+    filter: none;
+}
+
+.equip-found {
+    color: var(--life-bright);
+    font-style: italic;
+}
+
+.equip-stash {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 0.75rem;
+    letter-spacing: 0;
+    box-shadow: none;
+}
+
+.equip-stash:hover {
+    background: var(--surface-3);
+    border-color: var(--highlight);
+    color: var(--highlight-bright);
+    filter: none;
+}
+
+.equip-assign {
+    flex-shrink: 0;
+    max-width: 120px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    cursor: pointer;
+}
+
+.equip-assign:focus-visible {
+    outline: 2px solid var(--highlight);
+    outline-offset: 1px;
+}
+
+/* ---------- Reserva del culto ---------- */
+.reserve-box {
+    margin-top: 20px;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    border: 1px dashed var(--border-strong);
+    background: rgba(8, 7, 6, 0.35);
+}
+
+.reserve-hint {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    color: var(--text-faint);
+}
+
+.reserve-box .equip-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* ---------- Modal de la Armería ---------- */
+.armory-found {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: rgba(8, 7, 6, 0.4);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.armory-found input {
+    accent-color: var(--life-bright);
+}
+
+.armory-buy.is-found:not(:disabled) {
+    background: linear-gradient(180deg, var(--life-bright), var(--life));
+    box-shadow: none;
+}
+.armory-grimoire {
+    display: flex;
+    flex-direction: column;
+    max-width: 640px;
+    height: min(780px, calc(100vh - 32px));
+    overflow: hidden;
+}
+
+.armory-catalog {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin: 0 -8px;
+    padding: 0 8px;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+.armory-group + .armory-group {
+    margin-top: 20px;
+}
+
+.armory-group h3 {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    margin: 0 0 8px;
+    padding: 10px 14px 10px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--highlight);
+    background: color-mix(in srgb, var(--surface-3) 92%, transparent);
+    backdrop-filter: blur(6px);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--highlight);
+}
+
+.armory-group:last-child h3 {
+    border-left-color: var(--life-bright);
+    color: var(--life-bright);
+}
+
+.armory-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.armory-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 10px 10px 13px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: rgba(8, 7, 6, 0.4);
+}
+
+.armory-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.armory-title {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.armory-name {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.armory-owned {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--kind) 16%, transparent);
+    color: var(--kind);
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.armory-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin-top: 4px;
+    font-size: 0.8rem;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.armory-stat em {
+    margin-right: 3px;
+    font-style: normal;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.armory-item details {
+    margin-top: 2px;
+}
+
+.armory-item summary {
+    cursor: pointer;
+    width: fit-content;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.armory-item summary:hover {
+    color: var(--highlight-bright);
+}
+
+.armory-effect {
+    margin: 6px 0 0;
+    font-size: 0.83rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+.armory-effect strong {
+    color: var(--highlight-bright);
+    font-weight: 600;
+}
+
+.armory-buy {
+    flex-shrink: 0;
+    min-width: 92px;
+    padding: 7px 12px;
+    font-size: 0.68rem;
+}
+
+.armory-favor {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--highlight-bright);
+    font-variant-numeric: tabular-nums;
+}
+
+.armory-favor.is-negative {
+    color: var(--danger);
+}
+
+@media (max-width: 480px) {
+    .armory-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .armory-buy {
+        width: 100%;
+    }
+}

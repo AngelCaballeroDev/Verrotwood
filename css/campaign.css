@@ -1,0 +1,133 @@
+/* ---------- Campaña: Poder del dios ---------- */
+.campaign-box {
+    padding: 20px;
+    margin-bottom: 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: rgba(8, 7, 6, 0.45);
+    transition: border-color 0.4s, box-shadow 0.4s;
+}
+
+/* Meta alcanzada: el dios despierta */
+.campaign-box.is-awakened {
+    border-color: var(--accent-bright);
+    box-shadow: 0 0 0 1px var(--accent-bright), 0 0 40px -10px var(--accent-glow);
+}
+
+.campaign-box.is-awakened .rituals-status {
+    color: var(--highlight-bright);
+    font-weight: 600;
+}
+
+.campaign-box .rituals-status {
+    color: var(--text-muted);
+}
+
+.power-goal {
+    flex-shrink: 0;
+    width: 170px;
+}
+
+.power-goal label {
+    margin-bottom: 5px;
+    font-size: 0.7rem;
+}
+
+.power-goal input[type="number"] {
+    padding: 7px 10px;
+}
+
+.power-track {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0 16px;
+}
+
+.power-step {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--surface-3);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    font-size: 1.1rem;
+    letter-spacing: 0;
+    box-shadow: none;
+}
+
+.power-step:not(:disabled):hover {
+    background: var(--accent);
+    border-color: var(--accent-bright);
+    filter: none;
+}
+
+.power-meter {
+    flex: 1;
+    min-width: 0;
+}
+
+.power-value {
+    display: block;
+    margin-bottom: 6px;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--highlight-bright);
+    font-variant-numeric: tabular-nums;
+}
+
+.power-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--surface-3);
+    overflow: hidden;
+}
+
+.power-bar span {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+    box-shadow: 0 0 12px var(--accent-glow);
+    transition: width 0.4s ease;
+}
+
+.encounter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+.encounter-label {
+    margin-right: auto;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.encounter-actions button {
+    padding: 8px 14px;
+    font-size: 0.7rem;
+}
+
+@media (max-width: 600px) {
+    .power-goal {
+        width: 100%;
+    }
+
+    .encounter-label {
+        width: 100%;
+    }
+
+    .encounter-actions button {
+        flex: 1 1 100%;
+    }
+}

@@ -1,0 +1,375 @@
+/*
+ * Hoja de culto imprimible.
+ * Apaisada y en tinta negra. El área útil se calcula para que quepa en A4
+ * (la página más baja, 210 mm) y en Letter (la más estrecha, 279 mm), con 8 mm de margen.
+ * body.is-print-preview muestra la hoja en pantalla con el mismo tamaño (para revisarla).
+ */
+
+.print-sheet {
+    display: none;
+}
+
+@page {
+    size: landscape;
+    margin: 8mm;
+}
+
+@media print {
+    html,
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    body::before {
+        display: none !important;
+    }
+
+    body > *:not(.print-sheet) {
+        display: none !important;
+    }
+
+    .print-sheet {
+        display: grid !important;
+    }
+}
+
+body.is-print-preview > *:not(.print-sheet) {
+    display: none !important;
+}
+
+body.is-print-preview .print-sheet {
+    display: grid;
+    width: 263mm;
+    min-height: 194mm;
+    margin: 0 auto;
+    background: #fff;
+    outline: 1px dashed #999;
+}
+
+/* ---------- Maqueta de la hoja ---------- */
+.print-sheet {
+    grid-template-columns: 37% 1fr;
+    gap: 4mm;
+    min-height: 194mm;
+    color: #141414;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 7.6pt;
+    line-height: 1.35;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+.print-sheet h1,
+.print-sheet h2 {
+    margin: 0;
+    font-family: 'Cinzel', 'Georgia', serif;
+    color: #141414;
+    text-shadow: none;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    display: block;
+}
+
+.print-sheet h1 {
+    font-size: 15pt;
+    line-height: 1.15;
+}
+
+.print-sheet h2 {
+    margin-bottom: 1.6mm;
+    padding-bottom: 1mm;
+    border-bottom: 0.4mm solid #141414;
+    font-size: 9pt;
+    text-transform: uppercase;
+}
+
+.print-sheet .ps-label {
+    display: block;
+    font-size: 5.8pt;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.print-sheet strong {
+    font-weight: 700;
+}
+
+/* Columna izquierda: culto, rituales, reserva y notas */
+.ps-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2.6mm;
+    min-width: 0;
+}
+
+.ps-header {
+    position: relative;
+}
+
+.ps-brand {
+    position: absolute;
+    top: 2.4mm;
+    right: 3mm;
+    font-family: 'Cinzel', 'Georgia', serif;
+    font-size: 5.6pt;
+    letter-spacing: 0.1em;
+    color: #888;
+}
+
+.ps-header,
+.ps-block,
+.ps-cultist {
+    border: 0.5mm solid #141414;
+    border-radius: 2mm;
+    padding: 2.6mm 3mm;
+    break-inside: avoid;
+}
+
+.ps-deity {
+    margin-top: 1.6mm;
+}
+
+.ps-deity strong {
+    display: block;
+    font-family: 'Cinzel', 'Georgia', serif;
+    font-size: 10pt;
+}
+
+.ps-deity em {
+    display: block;
+    font-family: 'EB Garamond', 'Georgia', serif;
+    font-size: 8.5pt;
+    color: #444;
+}
+
+.ps-kv {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 0.8fr;
+    gap: 2mm;
+    margin-top: 2mm;
+    padding-top: 2mm;
+    border-top: 0.3mm solid #bbb;
+}
+
+.ps-kv strong {
+    display: block;
+    font-size: 9pt;
+}
+
+.ps-kv small {
+    display: block;
+    font-size: 6pt;
+    color: #555;
+}
+
+.ps-rituals {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2mm;
+}
+
+.ps-ritual {
+    padding-bottom: 1.2mm;
+    border-bottom: 0.3mm solid #ccc;
+}
+
+.ps-ritual:last-child {
+    border-bottom: none;
+}
+
+.ps-ritual-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 2mm;
+    font-size: 8pt;
+}
+
+.ps-ritual-head span {
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+.ps-ritual p {
+    margin: 0.3mm 0 0;
+    font-size: 6.3pt;
+    line-height: 1.28;
+    color: #333;
+}
+
+.ps-ritual p strong {
+    color: #141414;
+}
+
+.ps-rp {
+    display: flex;
+    align-items: center;
+    gap: 2.4mm;
+    margin-top: 2mm;
+    padding-top: 2mm;
+    border-top: 0.3mm solid #bbb;
+}
+
+.ps-rp strong,
+.ps-rp small {
+    display: block;
+}
+
+.ps-rp small {
+    font-size: 6pt;
+    color: #555;
+}
+
+.ps-box {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 14mm;
+    height: 9mm;
+    border: 0.5mm solid #141414;
+    border-radius: 1.5mm;
+    font-size: 12pt;
+    font-weight: 700;
+}
+
+.ps-notes-block {
+    flex: 1;
+}
+
+/* Líneas para escribir a mano */
+.ps-lines {
+    display: flex;
+    flex-direction: column;
+}
+
+.ps-lines span {
+    height: 5.2mm;
+    border-bottom: 0.25mm solid #bbb;
+}
+
+/* Columna derecha: 4 cajas de cultista en 2x2 */
+.ps-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3mm;
+    min-width: 0;
+}
+
+.ps-cultist {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6mm;
+    min-width: 0;
+}
+
+.ps-cultist-head {
+    display: flex;
+    align-items: baseline;
+    gap: 2mm;
+    padding-bottom: 1.2mm;
+    border-bottom: 0.3mm solid #bbb;
+}
+
+.ps-cultist-head .ps-label {
+    flex-shrink: 0;
+}
+
+.ps-name {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Cinzel', 'Georgia', serif;
+    font-size: 10pt;
+}
+
+.ps-num {
+    margin-left: auto;
+    font-size: 6.5pt;
+    color: #666;
+}
+
+.ps-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5mm;
+}
+
+.ps-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6mm;
+}
+
+.ps-circle,
+.ps-health {
+    display: grid;
+    place-items: center;
+    height: 9mm;
+    border: 0.5mm solid #141414;
+    font-size: 11pt;
+    font-weight: 700;
+}
+
+.ps-circle {
+    width: 9mm;
+    border-radius: 50%;
+}
+
+/* El atributo de ritual de la deidad, con doble borde */
+.ps-stat.is-ritual .ps-circle {
+    box-shadow: 0 0 0 0.6mm #fff, 0 0 0 1.1mm #141414;
+}
+
+.ps-health {
+    width: 13mm;
+    border-radius: 1.5mm;
+}
+
+.ps-stat-name {
+    font-size: 6pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.ps-meta {
+    margin: 0;
+    font-size: 6.8pt;
+    color: #333;
+}
+
+.ps-equip {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6mm;
+}
+
+.ps-equip li {
+    font-size: 6.8pt;
+    line-height: 1.3;
+}
+
+.ps-equip li span {
+    color: #444;
+}
+
+.ps-notes {
+    margin: 0;
+    font-size: 6.8pt;
+    font-style: italic;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.ps-cultist .ps-lines {
+    margin-top: auto;
+}
