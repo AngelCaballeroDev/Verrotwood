@@ -2,6 +2,8 @@
 
 Creador de cultos para **Verrotwood**, el juego de escaramuzas de folk horror. Consagra a tu dios, indoctrina a tus cultistas, prepara tus rituales y lleva a la mesa una hoja de culto lista para imprimir.
 
+**▶ Úsala online: [angelcaballerodev.github.io/Verrotwood](https://angelcaballerodev.github.io/Verrotwood/)**
+
 > **⚠️ Herramienta no oficial creada por fans.**
 > No está afiliada ni respaldada por el autor de *Verrotwood* (Mike Crutchett). *Verrotwood*, sus reglas, nombres y contenidos pertenecen a sus respectivos propietarios. **Necesitas el manual oficial para jugar.** Esta app no lo sustituye: solo ayuda a crear y llevar el control de tu culto.
 >
@@ -22,8 +24,8 @@ Creador de cultos para **Verrotwood**, el juego de escaramuzas de folk horror. C
 
 No necesita instalación ni servidor: es HTML, CSS y JavaScript sin dependencias.
 
-- **Local:** abre `index.html` en el navegador.
-- **Online:** activa GitHub Pages en el repositorio (*Settings → Pages → Deploy from a branch → `main` / root*).
+- **Online:** [angelcaballerodev.github.io/Verrotwood](https://angelcaballerodev.github.io/Verrotwood/). Funciona también en el móvil; puedes añadirla a la pantalla de inicio.
+- **Local:** descarga el repositorio y abre `index.html` en el navegador.
 
 Los cultos se guardan en el navegador de cada persona. Para llevarlos a otro dispositivo, usa **Exportar JSON** e **Importar JSON**.
 
