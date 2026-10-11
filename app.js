@@ -1,5 +1,8 @@
 // Reglas del juego
-const STORAGE_KEY = 'verrotwood_app_state';
+// Biblioteca de cultos en el navegador: { activeId, cults: [{ id, createdAt, updatedAt, state }] }
+const LIBRARY_KEY = 'verrotwood_library';
+// Versiones anteriores guardaban un único culto aquí; se migra a la biblioteca al cargar
+const LEGACY_STORAGE_KEY = 'verrotwood_app_state';
 const TRAITS = ['STR', 'DEX', 'INT', 'DEF'];
 const MAX_CULTISTS = 4;
 const STAT_MIN = 1;
@@ -211,22 +214,89 @@ function sanitizeState(raw) {
     return state;
 }
 
-// Cargar estado desde localStorage
-function loadState() {
-    let saved = null;
+// ---------- Biblioteca de cultos ----------
+
+let library = { activeId: null, cults: [] };
+// JSON del último guardado: la fecha de modificación solo cambia si el culto cambia de verdad
+let lastSavedJson = null;
+
+function makeId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function newEntry(state) {
+    const now = Date.now();
+    return { id: makeId(), createdAt: now, updatedAt: now, state };
+}
+
+function activeEntry() {
+    return library.cults.find(c => c.id === library.activeId);
+}
+
+// Leer un valor JSON de localStorage; si está corrupto se guarda una copia y se ignora
+function readJsonKey(key) {
     let raw = null;
     try {
-        raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) saved = JSON.parse(raw);
+        raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
     } catch (e) {
-        // Datos corruptos: se conserva una copia y se empieza un culto nuevo
-        console.warn('No se pudo leer el culto guardado; se empieza uno nuevo.', e);
+        console.warn(`No se pudo leer ${key}; se ignora.`, e);
         try {
-            if (raw) localStorage.setItem(`${STORAGE_KEY}_corrupt`, raw);
+            if (raw) localStorage.setItem(`${key}_corrupt`, raw);
         } catch (backupError) {}
+        return null;
     }
-    if (!saved) return;
-    applyState(sanitizeState(saved));
+}
+
+// Normalizar la biblioteca guardada: entradas con id y estado, sin ids repetidos
+function sanitizeLibrary(data) {
+    const seen = new Set();
+    const cults = (data && Array.isArray(data.cults) ? data.cults : [])
+        .filter(c => c && typeof c === 'object' && typeof c.id === 'string' && c.state && typeof c.state === 'object')
+        .filter(c => !seen.has(c.id) && seen.add(c.id))
+        .map(c => ({
+            id: c.id,
+            createdAt: Number(c.createdAt) || Date.now(),
+            updatedAt: Number(c.updatedAt) || Date.now(),
+            state: sanitizeState(c.state)
+        }));
+    return { activeId: data && typeof data.activeId === 'string' ? data.activeId : null, cults };
+}
+
+function writeLibrary() {
+    try {
+        localStorage.setItem(LIBRARY_KEY, JSON.stringify(library));
+        return true;
+    } catch (e) {
+        console.warn('No se pudo guardar la biblioteca en el navegador.', e);
+        return false;
+    }
+}
+
+// Cargar la biblioteca y abrir el culto activo
+function loadState() {
+    library = sanitizeLibrary(readJsonKey(LIBRARY_KEY));
+
+    // Migración: el culto único de versiones anteriores pasa a ser el primero de la biblioteca
+    let migrated = false;
+    if (library.cults.length === 0) {
+        const legacy = readJsonKey(LEGACY_STORAGE_KEY);
+        if (legacy && typeof legacy === 'object') {
+            library.cults.push(newEntry(sanitizeState(legacy)));
+            migrated = true;
+        }
+    }
+    if (library.cults.length === 0) library.cults.push(newEntry(sanitizeState({})));
+    if (!activeEntry()) library.activeId = library.cults[0].id;
+
+    applyState(sanitizeState(activeEntry().state));
+    lastSavedJson = JSON.stringify(cultState);
+    activeEntry().state = cultState;
+
+    if (writeLibrary() && migrated) {
+        try { localStorage.removeItem(LEGACY_STORAGE_KEY); } catch (e) {}
+    }
 }
 
 // Sustituir el culto actual por otro ya normalizado (al cargar o al importar)
@@ -241,17 +311,20 @@ function applyState(state) {
     updateDeityDisplay();
 }
 
-// Guardar estado en localStorage
+// Guardar el culto abierto en la biblioteca
 function saveState() {
     cultState.cultName = cultNameInput.value.trim();
     cultState.startingFavor = clampInt(startingFavorInput.value, 0, Infinity, 0);
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cultState));
-        showSaveStatus(true);
-    } catch (e) {
-        console.warn('No se pudo guardar el culto en el navegador.', e);
-        showSaveStatus(false);
+
+    const entry = activeEntry();
+    if (!entry) return;
+    entry.state = cultState;
+    const json = JSON.stringify(cultState);
+    if (json !== lastSavedJson) {
+        entry.updatedAt = Date.now();
+        lastSavedJson = json;
     }
+    showSaveStatus(writeLibrary());
 }
 
 // Indicador de guardado automático (sustituye al antiguo botón "Guardar Culto")
@@ -786,27 +859,50 @@ function slugify(text) {
     return normalizeText(text).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'culto';
 }
 
-exportJsonBtn.addEventListener('click', () => {
-    saveState();
-    const data = {
-        format: EXPORT_FORMAT,
-        version: EXPORT_VERSION,
-        exportedAt: new Date().toISOString(),
-        cult: cultState
-    };
+// Copia de seguridad con todos los cultos de la biblioteca
+const LIBRARY_EXPORT_FORMAT = 'verrotwood-library';
+
+function downloadJson(data, filename) {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `verrotwood-${slugify(cultState.cultName)}.json`;
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ¿Parece el estado de un culto?
+function looksLikeCult(raw) {
+    return raw && typeof raw === 'object' && ('cultists' in raw || 'deityName' in raw);
+}
+
+exportJsonBtn.addEventListener('click', () => {
+    saveState();
+    downloadJson({
+        format: EXPORT_FORMAT,
+        version: EXPORT_VERSION,
+        exportedAt: new Date().toISOString(),
+        cult: cultState
+    }, `verrotwood-${slugify(cultState.cultName)}.json`);
 });
+
+function exportLibrary() {
+    saveState();
+    const date = new Date().toISOString().slice(0, 10);
+    downloadJson({
+        format: LIBRARY_EXPORT_FORMAT,
+        version: EXPORT_VERSION,
+        exportedAt: new Date().toISOString(),
+        cults: library.cults.map(c => ({ createdAt: c.createdAt, updatedAt: c.updatedAt, cult: c.state }))
+    }, `verrotwood-biblioteca-${date}.json`);
+}
 
 importJsonBtn.addEventListener('click', () => importJsonInput.click());
 
+// Importar nunca sustituye nada: los cultos del archivo se añaden a la biblioteca
 importJsonInput.addEventListener('change', async () => {
     const file = importJsonInput.files[0];
     importJsonInput.value = ''; // permite volver a elegir el mismo archivo
@@ -820,24 +916,29 @@ importJsonInput.addEventListener('change', async () => {
         return;
     }
 
-    // Acepta el formato exportado ({ format, cult }) y también el estado guardado directamente
-    const raw = data && data.format === EXPORT_FORMAT ? data.cult : data;
-    if (!raw || typeof raw !== 'object' || (!('cultists' in raw) && !('deityName' in raw))) {
-        alert('El archivo no parece un culto de Verrotwood.');
+    // Copia de seguridad: añadir todos los cultos sin cambiar el abierto
+    if (data && data.format === LIBRARY_EXPORT_FORMAT && Array.isArray(data.cults)) {
+        const cults = data.cults.map(c => (c && c.cult) || c).filter(looksLikeCult);
+        if (cults.length === 0) {
+            alert('La copia de seguridad no contiene cultos.');
+            return;
+        }
+        if (!confirm(`¿Añadir ${cults.length} culto(s) a tu biblioteca? Los cultos que ya tienes no se tocan.`)) return;
+        saveState();
+        cults.forEach(raw => library.cults.push(newEntry(sanitizeState(raw))));
+        writeLibrary();
+        renderLibrary();
+        alert(`Se han añadido ${cults.length} culto(s) a tu biblioteca.`);
         return;
     }
 
-    const imported = sanitizeState(raw);
-    const name = imported.cultName || 'sin nombre';
-    if (!confirm(`¿Importar el culto "${name}"? Se sustituirá el culto actual.`)) return;
-
-    applyState(imported);
-    saveState();
-    renderRoster();
-    renderSelectedRituals();
-    renderPower();
-    // Se importa desde la pestaña Hoja: refrescar su vista previa
-    if (currentView === 'hoja') renderSheetPreview();
+    // Un culto (formato exportado { format, cult } o el estado guardado directamente): se añade y se abre
+    const raw = data && data.format === EXPORT_FORMAT ? data.cult : data;
+    if (!looksLikeCult(raw)) {
+        alert('El archivo no parece un culto de Verrotwood.');
+        return;
+    }
+    createCult(sanitizeState(raw));
 });
 
 // Mientras se escribe solo se actualizan los contadores y los botones
@@ -1530,11 +1631,176 @@ function renderSummary() {
     sumCultists.textContent = `${cultState.cultists.length}/${MAX_CULTISTS}`;
 }
 
+// ---------- Mis cultos: acciones y ventana de la biblioteca ----------
+
+const libraryModal = document.getElementById('libraryModal');
+const libraryList = document.getElementById('libraryList');
+const libraryCount = document.getElementById('libraryCount');
+const libraryBarCount = document.getElementById('libraryBarCount');
+const openLibraryBtn = document.getElementById('openLibraryBtn');
+const closeLibraryBtn = document.getElementById('closeLibraryBtn');
+
+// Volver a pintar todo tras cambiar de culto
+function refreshAll() {
+    closeArmoryModal();
+    renderRoster();
+    renderSelectedRituals();
+    renderPower();
+    if (currentView === 'hoja') renderSheetPreview();
+    renderLibrary();
+}
+
+function openCult(id) {
+    const entry = library.cults.find(c => c.id === id);
+    if (!entry) return;
+    saveState(); // guardar el culto que se deja
+    library.activeId = id;
+    applyState(sanitizeState(entry.state));
+    entry.state = cultState;
+    lastSavedJson = JSON.stringify(cultState);
+    writeLibrary();
+    refreshAll();
+}
+
+// Crear un culto (vacío o importado) y abrirlo
+function createCult(state = sanitizeState({})) {
+    saveState();
+    const entry = newEntry(state);
+    library.cults.push(entry);
+    openCult(entry.id);
+    return entry;
+}
+
+function duplicateCult(id) {
+    const entry = library.cults.find(c => c.id === id);
+    if (!entry) return;
+    saveState();
+    const copy = JSON.parse(JSON.stringify(entry.state));
+    copy.cultName = `${copy.cultName || 'Culto sin nombre'} (copia)`;
+    library.cults.push(newEntry(sanitizeState(copy)));
+    writeLibrary();
+    renderLibrary();
+}
+
+function deleteCult(id) {
+    const entry = library.cults.find(c => c.id === id);
+    if (!entry) return;
+    const name = entry.state.cultName || 'Culto sin nombre';
+    if (!confirm(`¿Eliminar "${name}"? No se puede deshacer (salvo que tengas una copia de seguridad).`)) return;
+
+    library.cults = library.cults.filter(c => c.id !== id);
+    if (library.cults.length === 0) {
+        // Nunca se queda vacía: se empieza un culto nuevo
+        library.cults.push(newEntry(sanitizeState({})));
+    }
+    if (id === library.activeId) {
+        // Se abre el culto modificado más recientemente
+        const next =[...library.cults].sort((a, b) => b.updatedAt - a.updatedAt)[0];
+        library.activeId = next.id;
+        applyState(sanitizeState(next.state));
+        next.state = cultState;
+        lastSavedJson = JSON.stringify(cultState);
+        writeLibrary();
+        refreshAll();
+    } else {
+        writeLibrary();
+        renderLibrary();
+    }
+}
+
+// "hace 5 minutos", "ayer"...
+const relativeTime = new Intl.RelativeTimeFormat('es', { numeric: 'auto' });
+function timeAgo(timestamp) {
+    const seconds = Math.round((timestamp - Date.now()) / 1000);
+    const units = [['year', 31536000], ['month', 2592000], ['day', 86400], ['hour', 3600], ['minute', 60]];
+    for (const [unit, size] of units) {
+        if (Math.abs(seconds) >= size) return relativeTime.format(Math.round(seconds / size), unit);
+    }
+    return 'ahora mismo';
+}
+
+function renderLibrary() {
+    const cults = [...library.cults].sort((a, b) => b.updatedAt - a.updatedAt);
+    libraryBarCount.textContent = cults.length;
+    libraryCount.textContent = `${cults.length} culto(s) en este navegador`;
+
+    libraryList.innerHTML = cults.map(entry => {
+        const s = entry.state;
+        const isActive = entry.id === library.activeId;
+        const hasDeity = s.deityName && s.ritualTrait;
+        const name = escapeHtml(s.cultName) || '<em>Culto sin nombre</em>';
+        return `
+            <li class="library-card${isActive ? ' is-active' : ''}" data-theme="${hasDeity ? s.ritualTrait : 'NEUTRAL'}">
+                <div class="library-main">
+                    <div class="library-title">
+                        <strong>${name}</strong>
+                        ${isActive ? '<span class="library-badge">Abierto</span>' : ''}
+                    </div>
+                    <p class="library-deity">${hasDeity ? `${escapeHtml(s.deityName)} · ${s.ritualTrait}` : 'Sin deidad'}</p>
+                    <p class="library-stats">
+                        Cultistas ${s.cultists.length}/${MAX_CULTISTS} · Rituales ${s.rituals.length}/${MAX_RITUALS} · Poder ${s.power}/${s.powerGoal}
+                    </p>
+                    <p class="library-date">Modificado ${timeAgo(entry.updatedAt)}</p>
+                </div>
+                <div class="library-actions">
+                    <button data-open-cult="${entry.id}"${isActive ? ' disabled' : ''}>${isActive ? 'Abierto' : 'Abrir'}</button>
+                    <button class="secondary-btn" data-duplicate-cult="${entry.id}">Duplicar</button>
+                    <button class="secondary-btn library-delete" data-delete-cult="${entry.id}">Eliminar</button>
+                </div>
+            </li>
+        `;
+    }).join('');
+}
+
+function openLibraryModal() {
+    saveState(); // para que el culto abierto aparezca con su último cambio
+    renderLibrary();
+    libraryModal.style.display = 'flex';
+    closeLibraryBtn.focus();
+}
+
+function closeLibraryModal() {
+    libraryModal.style.display = 'none';
+}
+
+openLibraryBtn.addEventListener('click', openLibraryModal);
+closeLibraryBtn.addEventListener('click', closeLibraryModal);
+
+document.getElementById('newCultBtn').addEventListener('click', () => {
+    createCult();
+    closeLibraryModal();
+    location.hash = '#culto';
+});
+
+document.getElementById('exportAllBtn').addEventListener('click', exportLibrary);
+document.getElementById('importLibraryBtn').addEventListener('click', () => importJsonInput.click());
+
+libraryList.addEventListener('click', (e) => {
+    const openBtn = e.target.closest('[data-open-cult]');
+    if (openBtn) {
+        openCult(openBtn.dataset.openCult);
+        closeLibraryModal();
+    }
+    const dupBtn = e.target.closest('[data-duplicate-cult]');
+    if (dupBtn) duplicateCult(dupBtn.dataset.duplicateCult);
+    const delBtn = e.target.closest('[data-delete-cult]');
+    if (delBtn) deleteCult(delBtn.dataset.deleteCult);
+});
+
+libraryModal.addEventListener('click', (e) => {
+    if (e.target === libraryModal) closeLibraryModal();
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLibraryModal();
+});
+
 // Inicialización
 loadState();
 renderRoster();
 renderSelectedRituals();
 renderPower();
+renderLibrary();
 showView(location.hash.slice(1));
 
 // Activar la transición de paleta solo después del primer pintado

@@ -32,8 +32,9 @@
     initial-value: #d9d2c7;
 }
 
-/* Neutra: ceniza y hueso */
-:root {
+/* Neutra: ceniza y hueso (también para elementos sin dios, como un culto sin deidad en la biblioteca) */
+:root,
+[data-theme="NEUTRAL"] {
     --accent: #5f5953;
     --accent-bright: #857e76;
     --highlight: #a59d92;

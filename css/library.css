@@ -1,0 +1,230 @@
+/* ---------- Botón "Mis cultos" en la barra ---------- */
+.library-btn {
+    flex-shrink: 0;
+    padding: 7px 12px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--highlight-bright);
+    box-shadow: none;
+    font-size: 0.7rem;
+}
+
+.library-btn:hover {
+    background: var(--accent-tint);
+    border-color: var(--highlight);
+    filter: none;
+    box-shadow: none;
+}
+
+.library-btn-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--surface-3);
+    color: var(--text);
+    font-size: 0.7rem;
+    letter-spacing: 0;
+}
+
+/* ---------- Ventana de la biblioteca ---------- */
+.library-grimoire {
+    display: flex;
+    flex-direction: column;
+    max-width: 640px;
+    max-height: min(820px, calc(100vh - 32px));
+    overflow: hidden;
+}
+
+.library-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.library-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    list-style: none;
+    margin: 0 -8px;
+    padding: 4px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+/* Cada tarjeta lleva el color de su propio dios (data-theme en la tarjeta) */
+.library-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-bright);
+    background: rgba(8, 7, 6, 0.45);
+}
+
+.library-card.is-active {
+    border-color: var(--border-strong);
+    border-left-color: var(--accent-bright);
+    background: var(--accent-tint);
+}
+
+.library-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.library-title {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.library-title strong {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.library-title em {
+    font-family: var(--font-lore);
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.library-badge {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.library-deity {
+    margin: 2px 0 0;
+    font-size: 0.82rem;
+    color: var(--highlight-bright);
+}
+
+.library-stats,
+.library-date {
+    margin: 2px 0 0;
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.library-date {
+    color: var(--text-faint);
+}
+
+.library-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.library-actions button {
+    min-width: 96px;
+    padding: 6px 10px;
+    font-size: 0.66rem;
+}
+
+.library-actions .library-delete {
+    background: transparent;
+    border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+    color: var(--danger-soft);
+}
+
+.library-actions .library-delete:hover {
+    background: color-mix(in srgb, var(--danger) 25%, transparent);
+    border-color: var(--danger);
+    color: var(--on-accent);
+}
+
+/* Copia de seguridad */
+.library-backup {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-strong);
+}
+
+.library-backup-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.library-backup-text strong {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text);
+}
+
+.library-backup-text small {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--text-muted);
+}
+
+.library-backup-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.library-backup-actions button {
+    padding: 7px 12px;
+    font-size: 0.66rem;
+}
+
+@media (max-width: 760px) {
+    /* En móvil la marca va a la izquierda y "Mis cultos" a la derecha */
+    .app-bar-inner {
+        justify-content: space-between;
+    }
+
+    .brand {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 520px) {
+    .library-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .library-actions {
+        flex-direction: row;
+    }
+
+    .library-actions button {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .library-backup {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .library-backup-actions button {
+        flex: 1;
+    }
+}

@@ -16,13 +16,17 @@
     <link rel="stylesheet" href="css/equipment.css">
     <link rel="stylesheet" href="css/campaign.css">
     <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/library.css">
     <link rel="stylesheet" href="css/print.css">
 </head>
 <body>
     <!-- Aplica la paleta del dios guardado antes del primer pintado, para que no aparezca la neutra -->
     <script>
         try {
-            const saved = JSON.parse(localStorage.getItem('verrotwood_app_state'));
+            const lib = JSON.parse(localStorage.getItem('verrotwood_library'));
+            const entry = lib && Array.isArray(lib.cults) && lib.cults.find(c => c.id === lib.activeId);
+            // Antes de la biblioteca, el culto único se guardaba en otra clave
+            const saved = entry ? entry.state : JSON.parse(localStorage.getItem('verrotwood_app_state'));
             if (saved && saved.deityName && saved.ritualTrait) {
                 document.body.dataset.theme = saved.ritualTrait;
             }
@@ -42,6 +46,9 @@
                 <a href="#campana" data-view-link="campana">Campaña</a>
                 <a href="#hoja" data-view-link="hoja">Hoja</a>
             </nav>
+            <button id="openLibraryBtn" class="library-btn" aria-haspopup="dialog">
+                Mis cultos <span id="libraryBarCount" class="library-btn-count">1</span>
+            </button>
         </div>
         <!-- Resumen siempre visible: lo que afecta a varias secciones -->
         <div class="summary-strip" aria-label="Resumen del culto">
@@ -206,8 +213,8 @@
             <div class="cult-actions">
                 <span id="saveStatus" class="save-status" role="status">Guardado automáticamente en este navegador</span>
                 <button id="printSheetBtn">Imprimir hoja</button>
-                <button id="exportJsonBtn" class="secondary-btn">Exportar JSON</button>
-                <button id="importJsonBtn" class="secondary-btn">Importar JSON</button>
+                <button id="exportJsonBtn" class="secondary-btn" title="Descarga este culto en un archivo JSON">Exportar este culto</button>
+                <button id="importJsonBtn" class="secondary-btn" title="Añade a tu biblioteca un culto o una copia de seguridad">Importar JSON</button>
                 <input type="file" id="importJsonInput" accept="application/json,.json" hidden>
             </div>
             <div class="sheet-preview-frame">
@@ -221,6 +228,36 @@
             <em>Verrotwood</em>, sus reglas, nombres y contenidos pertenecen a sus respectivos propietarios. Necesitas el manual oficial para jugar.</p>
         </footer>
     </main>
+
+    <!-- MODAL DE LA BIBLIOTECA: Mis cultos -->
+    <div id="libraryModal" class="modal-overlay">
+        <div class="modal-grimoire library-grimoire" role="dialog" aria-modal="true" aria-labelledby="libraryTitle">
+            <h2 id="libraryTitle">Mis cultos</h2>
+            <p class="modal-instructions">Tus cultos guardados en este navegador</p>
+
+            <div class="library-toolbar">
+                <button id="newCultBtn">+ Nuevo culto</button>
+            </div>
+
+            <ul id="libraryList" class="library-list"></ul>
+
+            <div class="library-backup">
+                <div class="library-backup-text">
+                    <strong>Copia de seguridad</strong>
+                    <small>Si borras los datos del navegador, los cultos se pierden. Guárdalos todos en un archivo de vez en cuando.</small>
+                </div>
+                <div class="library-backup-actions">
+                    <button id="exportAllBtn" class="secondary-btn">Exportar todos</button>
+                    <button id="importLibraryBtn" class="secondary-btn">Importar</button>
+                </div>
+            </div>
+
+            <div class="ritual-modal-footer">
+                <span id="libraryCount" class="ritual-modal-count"></span>
+                <button id="closeLibraryBtn">Hecho</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL DE LA DEIDAD -->
     <div id="deityModal" class="modal-overlay">
