@@ -287,7 +287,7 @@ function checkRosterLock() {
         addCultistBtn.disabled = cultState.cultists.length >= MAX_CULTISTS;
     } else {
         rosterSection.classList.add('locked-section');
-        rosterLockMessage.style.display = 'block';
+        rosterLockMessage.style.display = '';
         addCultistBtn.disabled = true;
     }
 }
@@ -500,6 +500,7 @@ function updateFavorDisplay() {
 
     // El selector numérico no deja bajar del Favor ya gastado
     startingFavorInput.min = spent;
+    renderSummary();
 }
 
 // Aviso temporal bajo el campo de presupuesto
@@ -657,6 +658,7 @@ function renderRpPool() {
         status += ` The Devout: +${cultists.length} RP al inicio de cada ronda.`;
     }
     rpPoolStatus.textContent = status;
+    renderSummary();
 
     rollAllRpBtn.hidden = fixed;
     newGameBtn.hidden = fixed;
@@ -834,6 +836,8 @@ importJsonInput.addEventListener('change', async () => {
     renderRoster();
     renderSelectedRituals();
     renderPower();
+    // Se importa desde la pestaña Hoja: refrescar su vista previa
+    if (currentView === 'hoja') renderSheetPreview();
 });
 
 // Mientras se escribe solo se actualizan los contadores y los botones
@@ -898,6 +902,7 @@ function renderPower() {
     powerStatus.textContent = awakened
         ? '¡Tu dios ha despertado! El culto ha ganado la campaña (si hay empate, se sigue jugando).'
         : `Faltan ${powerGoal - power} de Poder para despertar a tu dios.`;
+    renderSummary();
 }
 
 function changePower(delta) {
@@ -969,6 +974,7 @@ function renderSelectedRituals() {
         ? `${selected.length}/${MAX_RITUALS} elegidos · faltan ${missing}`
         : `${MAX_RITUALS}/${MAX_RITUALS} elegidos · culto completo`;
     ritualStatus.classList.toggle('is-complete', missing === 0);
+    renderSummary();
 
     let html = selected.map(r => `
         <li class="ritual-slot is-filled" data-category="${getRitualCategory(r).id}">
@@ -1440,11 +1446,96 @@ printSheetBtn.addEventListener('click', () => {
 // También con Ctrl+P o el menú del navegador
 window.addEventListener('beforeprint', renderPrintSheet);
 
+// ---------- Vista previa de la hoja (pestaña Hoja) ----------
+
+const sheetPreview = document.getElementById('sheetPreview');
+
+// Copia la hoja imprimible y la escala para que quepa en el ancho del panel
+function renderSheetPreview() {
+    renderPrintSheet();
+    sheetPreview.innerHTML = printSheet.innerHTML;
+    fitSheetPreview();
+}
+
+function fitSheetPreview() {
+    const frame = sheetPreview.parentElement;
+    sheetPreview.style.transform = 'none';
+    const scale = Math.min(1, frame.clientWidth / sheetPreview.offsetWidth);
+    sheetPreview.style.transform = `scale(${scale})`;
+    frame.style.height = `${sheetPreview.offsetHeight * scale}px`;
+}
+
+window.addEventListener('resize', () => {
+    if (currentView === 'hoja') fitSheetPreview();
+});
+
+// ---------- Navegación por pestañas ----------
+// Cada sección tiene su dirección (#culto, #cultistas...): recargar, "atrás"
+// o un enlace compartido llevan a la sección correcta.
+
+const VIEWS = ['culto', 'rituales', 'cultistas', 'campana', 'hoja'];
+const viewPanels = document.querySelectorAll('[data-view]');
+const viewLinks = document.querySelectorAll('[data-view-link]');
+let currentView = null;
+
+function showView(view) {
+    if (!VIEWS.includes(view)) view = 'culto';
+    const changed = view !== currentView;
+    currentView = view;
+
+    viewPanels.forEach(panel => { panel.hidden = panel.dataset.view !== view; });
+    viewLinks.forEach(link => {
+        if (link.dataset.viewLink === view) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+    });
+
+    if (view === 'hoja') renderSheetPreview();
+    if (changed) window.scrollTo(0, 0);
+}
+
+window.addEventListener('hashchange', () => showView(location.hash.slice(1)));
+
+// ---------- Franja de resumen ----------
+// Lo que afecta a varias secciones, siempre visible en la barra
+
+const sumFavor = document.getElementById('sumFavor');
+const sumRp = document.getElementById('sumRp');
+const sumPower = document.getElementById('sumPower');
+const sumRituals = document.getElementById('sumRituals');
+const sumCultists = document.getElementById('sumCultists');
+
+function renderSummary() {
+    const remaining = getRemainingFavor();
+    sumFavor.textContent = remaining;
+    sumFavor.classList.toggle('is-negative', remaining < 0);
+
+    // RP: fijo, o la suma de las tiradas hechas (con · si faltan cultistas por tirar)
+    const pending = cultState.cultists.filter(c => !c.rolled).length;
+    if (cultState.rpMode === 'fixed') {
+        sumRp.textContent = RP_FIXED;
+    } else {
+        const total = cultState.cultists.reduce((sum, c) => sum + (c.rolled ? c.rpTotal : 0), 0);
+        sumRp.textContent = cultState.cultists.length === 0 ? '—' : `${total}${pending ? '·' : ''}`;
+    }
+    sumRp.parentElement.title = cultState.rpMode !== 'fixed' && pending
+        ? `Reserva de Puntos de Ritual (faltan ${pending} cultista(s) por tirar)`
+        : 'Reserva de Puntos de Ritual';
+
+    sumPower.textContent = `${cultState.power}/${cultState.powerGoal}`;
+    sumPower.classList.toggle('is-complete', cultState.power >= cultState.powerGoal);
+
+    sumRituals.textContent = `${cultState.rituals.length}/${MAX_RITUALS}`;
+    sumRituals.classList.toggle('is-incomplete', cultState.rituals.length < MAX_RITUALS);
+
+    sumCultists.textContent = `${cultState.cultists.length}/${MAX_CULTISTS}`;
+}
+
 // Inicialización
 loadState();
 renderRoster();
 renderSelectedRituals();
 renderPower();
+showView(location.hash.slice(1));
 
 // Activar la transición de paleta solo después del primer pintado
 requestAnimationFrame(() => {

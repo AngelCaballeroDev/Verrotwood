@@ -68,44 +68,6 @@ body::before {
     margin: 0 auto;
 }
 
-/* Cabecera */
-.app-header {
-    text-align: center;
-    margin-bottom: 36px;
-}
-
-.eyebrow {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--highlight);
-    padding: 4px 14px;
-    border: 1px solid var(--border-strong);
-    border-radius: 999px;
-    margin-bottom: 14px;
-}
-
-h1 {
-    margin: 0;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(1.9rem, 5vw, 2.8rem);
-    letter-spacing: 0.06em;
-    line-height: 1.15;
-    color: var(--text);
-    text-shadow: 0 0 40px var(--accent-glow);
-}
-
-.app-subtitle {
-    margin: 10px 0 0;
-    font-family: var(--font-lore);
-    font-style: italic;
-    font-size: 1.05rem;
-    color: var(--text-muted);
-}
-
 h2 {
     margin: 0 0 20px;
     font-family: var(--font-display);

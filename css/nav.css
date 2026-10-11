@@ -1,0 +1,230 @@
+/*
+ * Barra superior: marca, pestañas de sección y franja de resumen.
+ * Se queda fija arriba al hacer scroll. En móvil las pestañas bajan a una
+ * barra fija al pie, al alcance del pulgar.
+ */
+
+body {
+    padding-top: 0;
+}
+
+.app-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    margin: 0 -16px 28px;
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 12px 30px -22px #000;
+}
+
+.app-bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 912px;
+    margin: 0 auto;
+    padding: 10px 16px 8px;
+}
+
+/* Marca */
+.brand {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    text-decoration: none;
+    line-height: 1.15;
+}
+
+.brand-eyebrow {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--highlight);
+}
+
+.brand-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text);
+}
+
+/* Pestañas */
+.app-tabs {
+    display: flex;
+    gap: 2px;
+}
+
+.app-tabs a {
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.app-tabs a:hover {
+    background: var(--surface-3);
+    color: var(--text);
+}
+
+.app-tabs a[aria-current="page"] {
+    background: var(--accent-tint);
+    color: var(--highlight-bright);
+    box-shadow: inset 0 -2px 0 var(--accent-bright);
+}
+
+.app-tabs a:focus-visible,
+.brand:focus-visible,
+.summary-item:focus-visible {
+    outline: 2px solid var(--highlight);
+    outline-offset: 2px;
+}
+
+/* Franja de resumen */
+.summary-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    max-width: 912px;
+    margin: 0 auto;
+    padding: 0 16px 10px;
+}
+
+.summary-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: rgba(8, 7, 6, 0.45);
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.summary-item:hover {
+    border-color: var(--border-strong);
+    background: var(--accent-tint);
+}
+
+.summary-item span {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.summary-item strong {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--highlight-bright);
+    font-variant-numeric: tabular-nums;
+}
+
+.summary-item strong.is-negative { color: var(--danger); }
+.summary-item strong.is-incomplete { color: var(--danger-soft); }
+.summary-item strong.is-complete { color: var(--life-bright); }
+
+/* Aviso de sección bloqueada con enlace a Culto */
+.lock-notice {
+    flex-wrap: wrap;
+}
+
+.lock-notice span {
+    flex: 1;
+    min-width: 200px;
+}
+
+.lock-link {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--highlight);
+    color: var(--highlight-bright);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.lock-link:hover {
+    background: var(--highlight);
+    color: var(--bg);
+}
+
+/* ---------- Móvil: pestañas en una barra fija al pie ---------- */
+@media (max-width: 760px) {
+    body {
+        /* Espacio para la barra inferior y la zona segura del iPhone */
+        padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    }
+
+    .app-bar {
+        margin: 0 -12px 20px;
+    }
+
+    .app-bar-inner {
+        justify-content: center;
+        padding: 8px 12px 6px;
+    }
+
+    .brand {
+        align-items: center;
+    }
+
+    .app-tabs {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 60;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0;
+        padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+        background: color-mix(in srgb, var(--bg) 96%, transparent);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -12px 30px -22px #000;
+    }
+
+    .app-tabs a {
+        padding: 12px 2px;
+        text-align: center;
+        font-size: 0.62rem;
+        letter-spacing: 0.04em;
+    }
+
+    .app-tabs a[aria-current="page"] {
+        box-shadow: inset 0 2px 0 var(--accent-bright);
+    }
+
+    .summary-strip {
+        gap: 4px;
+        padding: 0 12px 8px;
+    }
+
+    .summary-item {
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        padding: 4px 2px;
+    }
+
+    .summary-item span {
+        font-size: 0.55rem;
+        letter-spacing: 0.06em;
+    }
+}

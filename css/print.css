@@ -48,6 +48,23 @@ body.is-print-preview .print-sheet {
     outline: 1px dashed #999;
 }
 
+/* Vista previa en la pestaña Hoja: una página con sus márgenes, escalada para caber en el panel */
+.sheet-preview-frame {
+    margin-top: 20px;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 16px 40px -20px #000;
+}
+
+.print-sheet.sheet-preview {
+    display: grid;
+    width: 279mm;
+    min-height: 210mm;
+    padding: 8mm;
+    background: #fff;
+    transform-origin: top left;
+}
+
 /* ---------- Maqueta de la hoja ---------- */
 .print-sheet {
     grid-template-columns: 37% 1fr;

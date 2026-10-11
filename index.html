@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Verrotwood - Creador de Cultos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="css/rituals.css">
     <link rel="stylesheet" href="css/equipment.css">
     <link rel="stylesheet" href="css/campaign.css">
+    <link rel="stylesheet" href="css/nav.css">
     <link rel="stylesheet" href="css/print.css">
 </head>
 <body>
@@ -27,16 +28,45 @@
             }
         } catch (e) {}
     </script>
-    <div class="container">
-        <header class="app-header">
-            <span class="eyebrow">Verrotwood</span>
-            <h1>Creador de Cultos</h1>
-            <p class="app-subtitle">Lo que se entierra en el pantano, no siempre permanece enterrado.</p>
-        </header>
+    <!-- Barra superior: marca, pestañas de sección y franja de resumen -->
+    <header class="app-bar">
+        <div class="app-bar-inner">
+            <a class="brand" href="#culto" aria-label="Verrotwood · Creador de Cultos, ir a Culto">
+                <span class="brand-eyebrow">Verrotwood</span>
+                <span class="brand-title">Creador de Cultos</span>
+            </a>
+            <nav class="app-tabs" aria-label="Secciones">
+                <a href="#culto" data-view-link="culto">Culto</a>
+                <a href="#rituales" data-view-link="rituales">Rituales</a>
+                <a href="#cultistas" data-view-link="cultistas">Cultistas</a>
+                <a href="#campana" data-view-link="campana">Campaña</a>
+                <a href="#hoja" data-view-link="hoja">Hoja</a>
+            </nav>
+        </div>
+        <!-- Resumen siempre visible: lo que afecta a varias secciones -->
+        <div class="summary-strip" aria-label="Resumen del culto">
+            <a href="#culto" class="summary-item" title="Favor restante">
+                <span>Favor</span><strong id="sumFavor">0</strong>
+            </a>
+            <a href="#cultistas" class="summary-item" title="Reserva de Puntos de Ritual">
+                <span>RP</span><strong id="sumRp">0</strong>
+            </a>
+            <a href="#campana" class="summary-item" title="Poder del dios">
+                <span>Poder</span><strong id="sumPower">0/5</strong>
+            </a>
+            <a href="#rituales" class="summary-item" title="Rituales elegidos">
+                <span>Rituales</span><strong id="sumRituals">0/4</strong>
+            </a>
+            <a href="#cultistas" class="summary-item" title="Cultistas en la alineación">
+                <span>Cultistas</span><strong id="sumCultists">0/4</strong>
+            </a>
+        </div>
+    </header>
 
-        <!-- Panel de Configuración del Culto -->
-        <section class="panel">
-            <h2>Configuración del Culto</h2>
+    <main class="container">
+        <!-- CULTO: nombre, deidad y Favor -->
+        <section id="view-culto" class="panel view" data-view="culto" aria-labelledby="title-culto">
+            <h2 id="title-culto">Configuración del Culto</h2>
             <div class="form-group">
                 <label for="cultName">Nombre del Culto</label>
                 <input type="text" id="cultName" placeholder="Ej. Los Hijastros del Pantano">
@@ -56,49 +86,6 @@
                     </div>
                 </div>
                 <button id="openDeityModalBtn" class="deity-trigger-btn">¿Quién es tu Dios?</button>
-            </div>
-
-            <!-- Rituales del culto: exactamente 4 -->
-            <div class="rituals-box">
-                <div class="rituals-header">
-                    <div>
-                        <span class="deity-label">Rituales del Culto</span>
-                        <p id="ritualStatus" class="rituals-status"></p>
-                    </div>
-                    <button id="openRitualModalBtn" class="deity-trigger-btn">Abrir Grimorio</button>
-                </div>
-                <ul id="selectedRituals" class="ritual-slots"></ul>
-            </div>
-
-            <!-- Campaña: el Poder del dios (manual, págs. 48-51) -->
-            <div class="campaign-box">
-                <div class="rituals-header">
-                    <div>
-                        <span class="deity-label">Campaña · Poder del dios</span>
-                        <p id="powerStatus" class="rituals-status"></p>
-                    </div>
-                    <div class="power-goal">
-                        <label for="powerGoal">Meta de Poder</label>
-                        <input type="number" id="powerGoal" min="1" step="1" value="5">
-                        <div class="favor-presets power-presets" role="group" aria-label="Duración de la campaña">
-                            <button type="button" data-power-goal="5">Corta · 5</button>
-                            <button type="button" data-power-goal="21">Larga · 21</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="power-track">
-                    <button id="powerDownBtn" class="power-step" aria-label="Restar Poder">−</button>
-                    <div class="power-meter">
-                        <strong id="powerValue" class="power-value">0 / 5</strong>
-                        <div class="power-bar"><span id="powerBarFill"></span></div>
-                    </div>
-                    <button id="powerUpBtn" class="power-step" aria-label="Sumar Poder">+</button>
-                </div>
-                <div class="encounter-actions">
-                    <span class="encounter-label">Resultado del encuentro</span>
-                    <button id="encounterWinBtn">Victoria · +1 Poder, +100 Favor</button>
-                    <button id="encounterLossBtn" class="secondary-btn">Derrota · +50 Favor</button>
-                </div>
             </div>
 
             <div class="favor-stats-box">
@@ -122,24 +109,29 @@
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="cult-actions">
-                <span id="saveStatus" class="save-status" role="status">Guardado automáticamente en este navegador</span>
-                <button id="printSheetBtn" class="secondary-btn">Imprimir hoja</button>
-                <button id="exportJsonBtn" class="secondary-btn">Exportar JSON</button>
-                <button id="importJsonBtn" class="secondary-btn">Importar JSON</button>
-                <input type="file" id="importJsonInput" accept="application/json,.json" hidden>
+        <!-- RITUALES: exactamente 4 -->
+        <section id="view-rituales" class="panel view" data-view="rituales" aria-labelledby="title-rituales" hidden>
+            <h2 id="title-rituales">Rituales del Culto</h2>
+            <div class="rituals-box">
+                <div class="rituals-header">
+                    <p id="ritualStatus" class="rituals-status"></p>
+                    <button id="openRitualModalBtn" class="deity-trigger-btn">Abrir Grimorio</button>
+                </div>
+                <ul id="selectedRituals" class="ritual-slots"></ul>
             </div>
         </section>
 
-        <!-- Panel de Cultistas (Roster) - Inicialmente bloqueado hasta elegir Deidad -->
-        <section id="rosterSection" class="panel locked-section">
+        <!-- CULTISTAS: bloqueado hasta consagrar una deidad -->
+        <section id="rosterSection" class="panel view locked-section" data-view="cultistas" aria-labelledby="title-cultistas" hidden>
             <div class="roster-header">
-                <h2>Alineación de Cultistas <span class="roster-count">(<span id="cultistCount">0</span>/4)</span></h2>
+                <h2 id="title-cultistas">Alineación de Cultistas <span class="roster-count">(<span id="cultistCount">0</span>/4)</span></h2>
                 <button id="addCultistBtn" disabled>Indoctrinar Cultista (0 Favor)</button>
             </div>
             <div id="rosterLockMessage" class="lock-notice">
-                Debes consagrar una Deidad y elegir su Atributo principal antes de indoctrinar a tu alineación y calcular los Puntos de Ritual.
+                <span>Debes consagrar una Deidad y elegir su Atributo principal antes de indoctrinar a tu alineación y calcular los Puntos de Ritual.</span>
+                <a href="#culto" class="lock-link">Ir a Culto</a>
             </div>
             <div class="favor-legend">
                 <span><strong>+1 Stat</strong> 50 Favor</span>
@@ -174,12 +166,61 @@
             </div>
         </section>
 
+        <!-- CAMPAÑA: el Poder del dios (manual, págs. 48-51) -->
+        <section id="view-campana" class="panel view" data-view="campana" aria-labelledby="title-campana" hidden>
+            <h2 id="title-campana">Campaña</h2>
+            <div class="campaign-box">
+                <div class="rituals-header">
+                    <div>
+                        <span class="deity-label">Poder del dios</span>
+                        <p id="powerStatus" class="rituals-status"></p>
+                    </div>
+                    <div class="power-goal">
+                        <label for="powerGoal">Meta de Poder</label>
+                        <input type="number" id="powerGoal" min="1" step="1" value="5">
+                        <div class="favor-presets power-presets" role="group" aria-label="Duración de la campaña">
+                            <button type="button" data-power-goal="5">Corta · 5</button>
+                            <button type="button" data-power-goal="21">Larga · 21</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="power-track">
+                    <button id="powerDownBtn" class="power-step" aria-label="Restar Poder">−</button>
+                    <div class="power-meter">
+                        <strong id="powerValue" class="power-value">0 / 5</strong>
+                        <div class="power-bar"><span id="powerBarFill"></span></div>
+                    </div>
+                    <button id="powerUpBtn" class="power-step" aria-label="Sumar Poder">+</button>
+                </div>
+                <div class="encounter-actions">
+                    <span class="encounter-label">Resultado del encuentro</span>
+                    <button id="encounterWinBtn">Victoria · +1 Poder, +100 Favor</button>
+                    <button id="encounterLossBtn" class="secondary-btn">Derrota · +50 Favor</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOJA: vista previa de la hoja imprimible, imprimir y JSON -->
+        <section id="view-hoja" class="panel view" data-view="hoja" aria-labelledby="title-hoja" hidden>
+            <h2 id="title-hoja">Hoja de culto</h2>
+            <div class="cult-actions">
+                <span id="saveStatus" class="save-status" role="status">Guardado automáticamente en este navegador</span>
+                <button id="printSheetBtn">Imprimir hoja</button>
+                <button id="exportJsonBtn" class="secondary-btn">Exportar JSON</button>
+                <button id="importJsonBtn" class="secondary-btn">Importar JSON</button>
+                <input type="file" id="importJsonInput" accept="application/json,.json" hidden>
+            </div>
+            <div class="sheet-preview-frame">
+                <div id="sheetPreview" class="print-sheet sheet-preview" aria-hidden="true"></div>
+            </div>
+        </section>
+
         <!-- Aviso legal: herramienta de fans, no oficial -->
         <footer class="app-footer">
             <p><strong>Herramienta no oficial creada por fans.</strong> No está afiliada ni respaldada por el autor de <em>Verrotwood</em> (Mike Crutchett).
             <em>Verrotwood</em>, sus reglas, nombres y contenidos pertenecen a sus respectivos propietarios. Necesitas el manual oficial para jugar.</p>
         </footer>
-    </div>
+    </main>
 
     <!-- MODAL DE LA DEIDAD -->
     <div id="deityModal" class="modal-overlay">
